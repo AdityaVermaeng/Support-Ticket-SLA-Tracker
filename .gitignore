@@ -3,3 +3,19 @@ dist/
 .env
 .env.*
 !.env.example
+
+# AI tool directories
+.claude/
+.cursor/
+.agents/
+.devin/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
