@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  REPORTER
+  AGENT
+  ADMIN
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         UserRole  @default(REPORTER)
+
+  createdTickets Ticket[]  @relation("TicketCreator")
+  assignedTickets Ticket[]  @relation("TicketAssignee")
+  comments       Comment[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Ticket {
+  id               String         @id @default(uuid())
+  title            String
+  description      String
+  priority         TicketPriority
+  status           TicketStatus   @default(OPEN)
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  firstResponseAt  DateTime?
+  resolvedAt       DateTime?
+  slaDeadline      DateTime?
+
+  createdById      String
+  createdBy        User           @relation("TicketCreator", fields: [createdById], references: [id])
+
+  assignedToId     String?
+  assignedTo       User?          @relation("TicketAssignee", fields: [assignedToId], references: [id])
+
+  comments         Comment[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([assignedToId])
+  @@index([createdAt])
+}
+
+model Comment {
+  id          String   @id @default(uuid())
+  content     String
+
+  createdAt   DateTime @default(now())
+
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+
+  ticketId    String
+  ticket      Ticket   @relation(fields: [ticketId], references: [id])
+}
+
+model Holiday {
+  id    String   @id @default(uuid())
+  date  DateTime
+  name  String
+}
