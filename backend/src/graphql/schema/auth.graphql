@@ -1,0 +1,27 @@
+enum UserRole {
+  REPORTER
+  AGENT
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  role: UserRole!
+  createdAt: DateTime!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+extend type Query {
+  me: User!
+  users(role: UserRole): [User!]!
+}
+
+extend type Mutation {
+  register(name: String!, email: String!, password: String!, role: UserRole): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+}

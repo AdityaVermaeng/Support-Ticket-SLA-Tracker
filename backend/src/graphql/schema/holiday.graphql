@@ -1,0 +1,9 @@
+type Holiday {
+  id: ID!
+  date: DateTime!
+  name: String!
+}
+
+extend type Query {
+  holidays: [Holiday!]!
+}

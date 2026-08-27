@@ -1,0 +1,7 @@
+scalar DateTime
+scalar JSON
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}

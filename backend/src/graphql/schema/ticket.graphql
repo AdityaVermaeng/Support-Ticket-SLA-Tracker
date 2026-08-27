@@ -1,0 +1,69 @@
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum SLAState {
+  ON_TRACK
+  AT_RISK
+  BREACHED
+}
+
+type SLAInfo {
+  firstResponseDueAt: DateTime!
+  resolutionDueAt: DateTime!
+  firstResponseState: SLAState!
+  resolutionState: SLAState!
+  firstResponseRemainingMinutes: Int!
+  resolutionRemainingMinutes: Int!
+}
+
+type Ticket {
+  id: ID!
+  title: String!
+  description: String!
+  priority: Priority!
+  status: TicketStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  firstResponseAt: DateTime
+  resolvedAt: DateTime
+  createdBy: User!
+  assignedTo: User
+  comments: [Comment!]!
+  sla: SLAInfo!
+}
+
+type TicketConnection {
+  nodes: [Ticket!]!
+  pageInfo: PageInfo!
+}
+
+extend type Query {
+  tickets(
+    status: TicketStatus
+    priority: Priority
+    assigneeId: String
+    slaState: SLAState
+    take: Int
+    cursor: String
+  ): TicketConnection!
+
+  ticket(id: ID!): Ticket!
+}
+
+extend type Mutation {
+  createTicket(title: String!, description: String!, priority: Priority!): Ticket!
+  assignTicket(ticketId: ID!, assigneeId: ID!): Ticket!
+  changeTicketStatus(ticketId: ID!, status: TicketStatus!): Ticket!
+  resolveTicket(ticketId: ID!): Ticket!
+}
